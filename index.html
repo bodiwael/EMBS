@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SAC Admin Scanner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange: #ED7626;
+      --orange-dark: #c9601a;
+      --black: #1a1a1a;
+      --grey-bg: #f4f4f4;
+      --white: #ffffff;
+      --green: #22a267;
+      --red: #d94040;
+      --amber: #e09000;
+      --radius: 14px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.10);
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--grey-bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── LOGIN ── */
+    #login-screen {
+      width: 100%;
+      min-height: 100vh;
+      background: var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      width: 320px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .login-card h2 {
+      color: var(--orange);
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      padding: 12px 16px 12px 44px;
+      border: 1.5px solid #ddd;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 15px;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .input-wrap input:focus { border-color: var(--orange); }
+
+    .input-wrap .icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #aaa;
+      font-size: 18px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      background: var(--orange);
+      color: white;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-primary:hover { background: var(--orange-dark); }
+    .btn-primary:active { transform: scale(0.98); }
+
+    .err-msg {
+      color: var(--red);
+      font-size: 13px;
+      text-align: center;
+      min-height: 18px;
+    }
+
+    /* ── SCANNER APP ── */
+    #scanner-screen {
+      display: none;
+      width: 100%;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    header {
+      background: #1a1a1a;
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    header h1 { font-size: 18px; font-weight: 700; }
+
+    .logout-btn {
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .logout-btn:hover { border-color: white; }
+
+    .checkpoint-bar {
+      background: #f0f0f0;
+      padding: 14px 20px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .checkpoint-bar label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #666;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .checkpoint-bar select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 14px;
+      background: white;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .checkpoint-bar select:focus { border-color: var(--orange); }
+
+    .main-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .scan-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 40px 36px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .scan-card h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .scan-card p {
+      font-size: 13px;
+      color: #999;
+      text-align: center;
+    }
+
+    .ticket-input {
+      width: 100%;
+      padding: 20px;
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: 10px;
+      text-align: center;
+      color: var(--orange);
+      border: 2px solid #e0e0e0;
+      border-radius: 14px;
+      font-family: inherit;
+      outline: none;
+      margin-top: 10px;
+      transition: border-color 0.2s;
+    }
+
+    .ticket-input:focus { border-color: var(--orange); }
+    .ticket-input::placeholder { color: #ddd; letter-spacing: 8px; }
+
+    .checkin-btn {
+      width: 100%;
+      padding: 18px;
+      background: var(--orange);
+      color: white;
+      font-family: inherit;
+      font-size: 18px;
+      font-weight: 700;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+      transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 4px 14px rgba(237,118,38,0.35);
+    }
+
+    .checkin-btn:hover { background: var(--orange-dark); }
+    .checkin-btn:active { transform: scale(0.98); }
+    .checkin-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+
+    /* ── OVERLAY / MODAL ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .overlay.visible { display: flex; }
+
+    .modal {
+      background: white;
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      max-width: 340px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+      animation: pop 0.2s ease;
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.88); opacity: 0; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
+
+    .modal-icon { font-size: 52px; margin-bottom: 10px; }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .modal-body {
+      font-size: 16px;
+      color: #555;
+      white-space: pre-line;
+      margin-bottom: 22px;
+    }
+
+    .modal-ok {
+      padding: 12px 40px;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      color: white;
+      transition: opacity 0.2s;
+    }
+    .modal-ok:hover { opacity: 0.88; }
+
+    /* Loading spinner modal */
+    .spinner {
+      width: 40px; height: 40px;
+      border: 4px solid #f0f0f0;
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text { font-size: 15px; color: #555; }
+  </style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <h2>Admin Access</h2>
+    <div class="input-wrap">
+      <span class="icon">🔒</span>
+      <input id="pass-input" type="password" placeholder="Passcode" onkeydown="if(event.key==='Enter') doLogin()"/>
+    </div>
+    <div class="err-msg" id="login-err"></div>
+    <button class="btn-primary" onclick="doLogin()">Login</button>
+  </div>
+</div>
+
+<!-- ══ SCANNER ══ -->
+<div id="scanner-screen">
+  <header>
+    <h1>⚡ SAC Admin Scanner</h1>
+    <button class="logout-btn" onclick="doLogout()">Logout</button>
+  </header>
+
+  <div class="checkpoint-bar">
+    <label>SELECT CHECKPOINT</label>
+    <select id="checkpoint-select">
+      <option value="0">🎒 Kit</option>
+      <option value="1">🍽️ Lunch</option>
+      <option value="2">⭐ Extra</option>
+    </select>
+  </div>
+
+  <div class="main-area">
+    <div class="scan-card">
+      <h2>Enter Ticket ID</h2>
+      <p>Look for the 3-digit number on the ticket</p>
+      <input
+        id="ticket-input"
+        class="ticket-input"
+        type="number"
+        placeholder="000"
+        min="1"
+        onkeydown="if(event.key==='Enter') doCheckin()"
+      />
+      <button class="checkin-btn" id="checkin-btn" onclick="doCheckin()">
+        ✅ CHECK IN
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOADING OVERLAY ══ -->
+<div class="overlay" id="loading-overlay">
+  <div class="modal">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loading-text">Checking ticket...</div>
+  </div>
+</div>
+
+<!-- ══ RESULT MODAL ══ -->
+<div class="overlay" id="result-overlay">
+  <div class="modal">
+    <div class="modal-icon" id="modal-icon"></div>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+    <button class="modal-ok" id="modal-ok" onclick="closeModal()">OK</button>
+  </div>
+</div>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPK5w_HTZ57koqUFCtPUhzQPJAp7NY96r9Ic59cV95EHmySNGjyUuqAuizyNgYD7On/exec";
+  const PASSWORD  = "SAC2030";
+
+  // ── LOGIN ──
+  function doLogin() {
+    const val = document.getElementById('pass-input').value;
+    const err = document.getElementById('login-err');
+    if (val === PASSWORD) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('scanner-screen').style.display = 'flex';
+      document.getElementById('ticket-input').focus();
+      err.textContent = '';
+    } else {
+      err.textContent = '❌ Wrong passcode. Try again.';
+      document.getElementById('pass-input').value = '';
+    }
+  }
+
+  function doLogout() {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('scanner-screen').style.display = 'none';
+    document.getElementById('pass-input').value = '';
+    document.getElementById('ticket-input').value = '';
+  }
+
+  // ── CHECK IN ──
+  async function doCheckin() {
+    const ticketId   = document.getElementById('ticket-input').value.trim();
+    const checkpoint = parseInt(document.getElementById('checkpoint-select').value);
+
+    if (!ticketId) return;
+
+    showLoading(`Checking ID #${ticketId}…`);
+
+    try {
+      // GET + query params — avoids CORS preflight issues with Google Apps Script
+      const url = SCRIPT_URL + '?action=scan&ticket_id=' + encodeURIComponent(ticketId) + '&checkpoint_index=' + checkpoint;
+      const res  = await fetch(url);
+      const data = await res.json();
+      hideLoading();
+
+      if (data.status === 'success') {
+        document.getElementById('ticket-input').value = '';
+        showModal('✅', 'Marked Present', data.name || '', '#22a267');
+      } else if (data.message && data.message.includes('ALREADY')) {
+        showModal('⚠️', 'DUPLICATE', 'Already scanned at:\n' + (data.timestamp || ''), '#e09000');
+      } else {
+        showModal('❌', 'Error', data.message || 'Unknown error', '#d94040');
+      }
+    } catch (err) {
+      hideLoading();
+      showModal('❌', 'Network Error', err.message, '#d94040');
+    }
+  }
+
+  // ── MODALS ──
+  function showLoading(text) {
+    document.getElementById('loading-text').textContent = text;
+    document.getElementById('loading-overlay').classList.add('visible');
+    document.getElementById('checkin-btn').disabled = true;
+  }
+
+  function hideLoading() {
+    document.getElementById('loading-overlay').classList.remove('visible');
+    document.getElementById('checkin-btn').disabled = false;
+  }
+
+  function showModal(icon, title, body, color) {
+    document.getElementById('modal-icon').textContent  = icon;
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-title').style.color = color;
+    document.getElementById('modal-body').textContent  = body;
+    document.getElementById('modal-ok').style.background = color;
+    document.getElementById('result-overlay').classList.add('visible');
+  }
+
+  function closeModal() {
+    document.getElementById('result-overlay').classList.remove('visible');
+    document.getElementById('ticket-input').focus();
+  }
+
+  // Close modal on backdrop click
+  document.getElementById('result-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+</script>
+</body>
+</html>
